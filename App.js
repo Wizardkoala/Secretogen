@@ -18,9 +18,10 @@ function RandChar() {
 
 
 export default function App() {
-
+  // Preset formula
   var formula = ":/w:/w:/n/n"
 
+  // Generate passwords
   var passList = []
   for (let index = 0; index < 10; index++) {
     var newPassword = formula
@@ -49,14 +50,25 @@ export default function App() {
   );
 }
 
+const Colors = {
+  text: "#fff",
+  primary: "#3F5663",
+  accent: "#E0C294",
+  background: "#3F5663"
+}
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 40,
-    backgroundColor: '#fff',
+    backgroundColor: '#3F5663',
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
+  },
+  text: {
+    color: "white",
   },
   font: {
     flex: 1,
