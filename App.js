@@ -9,22 +9,28 @@ function RandInt(min, max) {
   return Math.round(min + (Math.random() * (max - min)))
 }
 
+function RandWord() {
+  return data.Words[RandInt(1, data.Words.length)]
+}
+
 
 export default function App() {
+
+  console.log(RandWord())
 
   var words = data.Words
   var formula = ":/w:/w:/w:/n/n/n"
 
   var passList = []
   for (let index = 0; index < 10; index++) {
-    numbers.push(words[RandInt(1, 90000)])
+    passList.push(words[RandInt(1, 90000)])
   }
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Text>Basic</Text>
-      <FlatList data={numbers} 
+      <FlatList data={passList} 
       renderItem={({item}) => <Text style={styles.font}>{item}</Text>} />
       
     </View>
