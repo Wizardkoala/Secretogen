@@ -10,20 +10,32 @@ function RandInt(min, max) {
 }
 
 function RandWord() {
-  return data.Words[RandInt(1, data.Words.length)]
+  return data.Words[RandInt(0, data.Words.length)]
+}
+function RandChar() {
+  return data.Alphabet[RandInt(0, 25)]
 }
 
 
 export default function App() {
 
-  console.log(RandWord())
-
-  var words = data.Words
   var formula = ":/w:/w:/w:/n/n/n"
 
   var passList = []
   for (let index = 0; index < 10; index++) {
-    passList.push(words[RandInt(1, 90000)])
+    var newPassword = formula
+
+    while (newPassword.includes("/w")) {
+      newPassword = newPassword.replace("/w", RandWord())
+    }
+    while (newPassword.includes("/c")) {
+      newPassword = newPassword.replace("/c", RandChar())
+    }
+    while (newPassword.includes("/n")) {
+      newPassword = newPassword.replace("/n", RandInt(0, 9))
+    } 
+
+    passList.push(newPassword)
   }
 
   return (
