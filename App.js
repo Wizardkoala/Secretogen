@@ -19,7 +19,7 @@ function RandChar() {
 
 export default function App() {
 
-  var formula = ":/w:/w:/w:/n/n/n"
+  var formula = ":/w:/w:/n/n"
 
   var passList = []
   for (let index = 0; index < 10; index++) {
