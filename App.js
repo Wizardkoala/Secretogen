@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 
 import data from './words.json'
-
+import { useState } from 'react';
 
 function RandInt(min, max) {
   return Math.round(min + (Math.random() * (max - min)))
@@ -19,11 +20,14 @@ function RandChar() {
 
 export default function App() {
   // Preset formula
-  var formula = ":/w:/w:/n/n"
+  const [formula, setFormula] = useState(":/w:/w:/n/n")
+  const [test, setTest] = useState("Base Value")
+
+  console.log(test)
 
   // Generate passwords
   var passList = []
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 7; index++) {
     var newPassword = formula
 
     while (newPassword.includes("/w")) {
@@ -41,39 +45,84 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Text>Basic</Text>
+      <StatusBar style="dark" />
+      <View style={ styles.spacer } />
+      <TextInput 
+        numberOfLines={1}
+        autoCapitalize='none'
+        autoComplete='off'
+        defaultValue=":/w:/w:/n/n"
+        onSubmitEditing={(event) => setFormula(event.nativeEvent.text)}/>
+
+      <View style={styles.spacer} />
+
+
       <FlatList data={passList} 
-      renderItem={({item}) => <Text style={styles.font}>{item}</Text>} />
-      
+      style={styles.passList}
+      renderItem={({item}) => 
+        <View style={styles.password}>
+          <Text onPress={() => { Clipboard.setString(item) }} style={styles.text}>
+            {item}
+          </Text>
+        </View>
+      } />
+
+      <Button 
+        onPress={console.log("Refresh1")}
+        title='Refresh'
+        color={Colors.accent}
+      />
+      <Text style={ styles.disclaimer }>
+        Generated passwords are never saved or transmitted.
+      </Text>
     </View>
   );
 }
 
 const Colors = {
   text: "#fff",
-  primary: "#3F5663",
-  accent: "#E0C294",
-  background: "#3F5663"
+  primary: "#917E5D",
+  accent: "#E6AC47",
+  midground: "#838C96",
+  background: "#e3e3e9"
 }
 
 
 const styles = StyleSheet.create({
+  passList: {
+    flex: 10
+  },
+  spacer: {
+    flex: 1,
+    minHeight: 10,
+    maxHeight: 40
+  },
+  disclaimer: {
+    alignContent: 'flex-end',
+    marginTop: 10,
+  },
+  refreshButton: {
+    alignContent: "flex-end",
+    margin: 10
+  },
   container: {
     flex: 1,
-    padding: 40,
-    backgroundColor: '#3F5663',
+    padding: 10,
+    backgroundColor: Colors.background,
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
   },
   text: {
-    color: "white",
-  },
-  font: {
-    flex: 1,
+    color: Colors.text,
     fontSize: 20,
-    padding: 10,
-    height: 44,
+  },
+  password: {
+    backgroundColor: Colors.midground,
+    borderRadius: 20,
+    minWidth: 300,
+    padding: 15,
+    paddingHorizontal: 25,
+    marginBottom: 8
   }
 });
