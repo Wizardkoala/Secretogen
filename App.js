@@ -86,9 +86,6 @@ export default function App() {
 
       <View style={styles.spacer} />
 
-      <Text>Cough</Text>
-
-
       <FlatList data={passList} 
       style={styles.passList}
       renderItem={({item}) => 
