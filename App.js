@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 
@@ -21,12 +21,12 @@ function RandChar() {
 export default function App() {
   // Preset formula
   const [formula, setFormula] = useState(":/w:/w:/n/n")
+  const [passList, setPassList] = useState([])
   const [test, setTest] = useState("Base Value")
 
   console.log(test)
 
   // Generate passwords
-  var passList = []
   for (let index = 0; index < 7; index++) {
     var newPassword = formula
 
@@ -68,9 +68,10 @@ export default function App() {
       } />
 
       <Button 
-        onPress={console.log("Refresh1")}
+        disabled={false}
         title='Refresh'
         color={Colors.accent}
+        onPress={() => { setPassList([]) } }
       />
       <Text style={ styles.disclaimer }>
         Generated passwords are never saved or transmitted.
