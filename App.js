@@ -1,10 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import { Alert, Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import {Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+
+import Storage from 'react-native-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 import data from './words.json'
 import { useState } from 'react';
+
+
+const storage = new Storage({
+  size: 50,
+  storageBackend: AsyncStorage,
+  defaultExpires: 30 * 1000 * 60,
+  enableCache: false,
+})
+
 
 function RandInt(min, max) {
   return Math.round(min + (Math.random() * (max - min)))
@@ -20,16 +32,28 @@ function RandChar() {
 
 export default function App() {
   // Preset formula
-  const [formula, setFormula] = useState(":/w:/w:/n/n")
+  const [formula, setFormula] = useState("/w-/w(/n/n/n/n)")
   const [passList, setPassList] = useState([])
-  const [test, setTest] = useState("Base Value")
 
-  console.log(test)
+  storage.load({
+    key: "formula",
+  })
+  .then(ret => {setFormula(ret)})
+  .catch(err => {
+    console.warn(err.message)
+  })
 
-  // Generate passwords
+  //   Generate passwords
+
+  // Prevent duplicate lists from being generated
+  if (passList.length > 0) {
+    setPassList([])
+  }
+  // Build password list
   for (let index = 0; index < 7; index++) {
     var newPassword = formula
 
+    // Replace flags with words, characters, or numbers
     while (newPassword.includes("/w")) {
       newPassword = newPassword.replace("/w", RandWord())
     }
@@ -51,10 +75,18 @@ export default function App() {
         numberOfLines={1}
         autoCapitalize='none'
         autoComplete='off'
-        defaultValue=":/w:/w:/n/n"
-        onSubmitEditing={(event) => setFormula(event.nativeEvent.text)}/>
+        defaultValue={formula}
+        onSubmitEditing={(event) => {
+          storage.save({
+            "key": "formula",
+            "data": event.nativeEvent.text,
+          })
+          setFormula(event.nativeEvent.text)
+          }}/>
 
       <View style={styles.spacer} />
+
+      <Text>Cough</Text>
 
 
       <FlatList data={passList} 
