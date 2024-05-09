@@ -74,6 +74,7 @@ export default function App() {
       />
       <Text style={ styles.disclaimer }>
         Generated passwords are never saved or transmitted.
+        All generation is run locally. Use at your own risk.
       </Text>
     </View>
   );
