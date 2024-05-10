@@ -11,6 +11,8 @@ import data from './words.json'
 import { useState } from 'react';
 
 
+const defaultFormula = "/w-/w#/n/n/n";
+
 const storage = new Storage({
   size: 50,
   storageBackend: AsyncStorage,
@@ -21,21 +23,31 @@ const storage = new Storage({
 
 
 export default function App() {
+  console.log("App render.")
   const [formula, setFormula] = useState("base")
   const [passList, setPassList] = useState("none")
 
   //   Generate passwords
-
+  
+  
+  
   if (passList == "none") {
     buildPassList().then((ret) => {setPassList(ret)})
-  } else {
-    console.log(passList)
+    console.log("Queued password list build. Expect re-render.")
   }
-
-  // Prevent duplicate lists from being generated
-  // Build password list
   
-
+  if (formula == "base") {
+    console.log("Retrieving formula. Expect re-render.")
+    storage.load({
+      key: "formula"
+    }).then(ret => setFormula(ret))
+    .catch(err => {
+      if (err != "NotFoundError") {
+        setFormula(defaultFormula)
+      }
+    })
+  }
+  
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
@@ -48,7 +60,7 @@ export default function App() {
         onSubmitEditing={(event) => {
           storage.save({
             key: "formula",
-            "data": event.nativeEvent.text,
+            data: event.nativeEvent.text,
             expires: null
           })
           setFormula(event.nativeEvent.text)
@@ -102,11 +114,12 @@ async function buildPassList() {
     var formula = await storage.load({key: "formula"})
   } catch (err) {
     if (err == "NotFoundError") {
-      var formula = "/w-/w#/n/n/n"
+      var formula = defaultFormula
     } else {
       console.warn(err.message)
     }
   }
+
 
 
   var passwordList = []
@@ -128,7 +141,7 @@ async function buildPassList() {
     passwordList.push(newPassword)
   }
 
-  return passwordList, formula
+  return passwordList
 
 }
 
