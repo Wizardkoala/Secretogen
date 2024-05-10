@@ -4,6 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateSecureRandom } from 'react-native-securerandom';
 
 
 import data from './words.json'
@@ -18,54 +19,22 @@ const storage = new Storage({
 })
 
 
-function RandInt(min, max) {
-  return Math.round(min + (Math.random() * (max - min)))
-}
-
-function RandWord() {
-  return data.Words[RandInt(0, data.Words.length)]
-}
-function RandChar() {
-  return data.Alphabet[RandInt(0, 25)]
-}
-
 
 export default function App() {
-  // Preset formula
-  const [formula, setFormula] = useState("/w-/w(/n/n/n/n)")
-  const [passList, setPassList] = useState([])
-
-  storage.load({
-    key: "formula",
-  })
-  .then(ret => {setFormula(ret)})
-  .catch(err => {
-    console.warn(err.message)
-  })
+  const [formula, setFormula] = useState("base")
+  const [passList, setPassList] = useState("none")
 
   //   Generate passwords
 
+  if (passList == "none") {
+    buildPassList().then((ret) => {setPassList(ret)})
+  } else {
+    console.log(passList)
+  }
+
   // Prevent duplicate lists from being generated
-  if (passList.length > 0) {
-    setPassList([])
-  }
   // Build password list
-  for (let index = 0; index < 7; index++) {
-    var newPassword = formula
-
-    // Replace flags with words, characters, or numbers
-    while (newPassword.includes("/w")) {
-      newPassword = newPassword.replace("/w", RandWord())
-    }
-    while (newPassword.includes("/c")) {
-      newPassword = newPassword.replace("/c", RandChar())
-    }
-    while (newPassword.includes("/n")) {
-      newPassword = newPassword.replace("/n", RandInt(0, 9))
-    } 
-
-    passList.push(newPassword)
-  }
+  
 
   return (
     <View style={styles.container}>
@@ -78,8 +47,9 @@ export default function App() {
         defaultValue={formula}
         onSubmitEditing={(event) => {
           storage.save({
-            "key": "formula",
+            key: "formula",
             "data": event.nativeEvent.text,
+            expires: null
           })
           setFormula(event.nativeEvent.text)
           }}/>
@@ -100,7 +70,7 @@ export default function App() {
         disabled={false}
         title='Refresh'
         color={Colors.accent}
-        onPress={() => { setPassList([]) } }
+        onPress={() => { setPassList("none") } }
       />
       <Text style={ styles.disclaimer }>
         Generated passwords are never saved or transmitted.
@@ -109,6 +79,63 @@ export default function App() {
     </View>
   );
 }
+
+
+
+
+async function RandInt(min, max) {
+  var randByte = await generateSecureRandom(1)
+  randByte = randByte / 256
+  return Math.round(min + (randByte * (max - min)))
+}
+
+async function RandWord() {
+  return data.Words[await RandInt(0, data.Words.length)]
+}
+async function RandChar() {
+  return data.Alphabet[await RandInt(0, 25)]
+}
+
+async function buildPassList() {
+
+  try {
+    var formula = await storage.load({key: "formula"})
+  } catch (err) {
+    if (err == "NotFoundError") {
+      var formula = "/w-/w#/n/n/n"
+    } else {
+      console.warn(err.message)
+    }
+  }
+
+
+  var passwordList = []
+
+  for (let index = 0; index < 7; index++) {
+    var newPassword = formula
+
+    // Replace flags with words, characters, or numbers
+    while (newPassword.includes("/w")) {
+      newPassword = newPassword.replace("/w", await RandWord())
+    }
+    while (newPassword.includes("/c")) {
+      newPassword = newPassword.replace("/c", await RandChar())
+    }
+    while (newPassword.includes("/n")) {
+      newPassword = newPassword.replace("/n", await RandInt(0, 9))
+    }
+
+    passwordList.push(newPassword)
+  }
+
+  return passwordList, formula
+
+}
+
+
+
+
+
 
 const Colors = {
   text: "#fff",
