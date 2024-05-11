@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import Storage from 'react-native-storage';
@@ -9,7 +9,11 @@ import { generateSecureRandom } from 'react-native-securerandom';
 
 import data from './words.json'
 import { useState } from 'react';
+import * as Styles from './Styles';
 
+
+const Space = () => <View style={Styles.general.spacer} />;
+const Line = () => <View style={Styles.general.line} />;
 
 const defaultFormula = "/w-/w#/n/n/n";
 
@@ -21,70 +25,102 @@ const storage = new Storage({
 })
 
 
-
 export default function App() {
-  console.log("App render.")
   const [formula, setFormula] = useState("base")
   const [passList, setPassList] = useState("none")
 
   //   Generate passwords
-  
-  
-  
+
+
+
   if (passList == "none") {
-    buildPassList().then((ret) => {setPassList(ret)})
+    buildPassList().then((ret) => { setPassList(ret) })
     console.log("Queued password list build. Expect re-render.")
   }
-  
+
   if (formula == "base") {
     console.log("Retrieving formula. Expect re-render.")
     storage.load({
       key: "formula"
     }).then(ret => setFormula(ret))
-    .catch(err => {
-      if (err != "NotFoundError") {
-        setFormula(defaultFormula)
-      }
-    })
+      .catch(err => {
+        if (err != "NotFoundError") {
+          setFormula(defaultFormula)
+        }
+      })
   }
+
+  console.log("App render.")
+  
   
   return (
-    <View style={styles.container}>
+    <View style={Styles.general.container}>
       <StatusBar style="dark" />
-      <View style={ styles.spacer } />
-      <TextInput 
-        numberOfLines={1}
-        autoCapitalize='none'
-        autoComplete='off'
-        defaultValue={formula}
-        onSubmitEditing={(event) => {
-          storage.save({
-            key: "formula",
-            data: event.nativeEvent.text,
-            expires: null
-          })
-          setFormula(event.nativeEvent.text)
-          }}/>
+      <Space/>
 
-      <View style={styles.spacer} />
+      {/* Formula box */}
+      <View style={Styles.formulaBox.background}>
 
-      <FlatList data={passList} 
-      style={styles.passList}
-      renderItem={({item}) => 
-        <View style={styles.password}>
-          <Text onPress={() => { Clipboard.setString(item) }} style={styles.text}>
-            {item}
-          </Text>
-        </View>
-      } />
+        <Text style={Styles.formulaBox.title}>
+          Formula
+        </Text>
 
-      <Button 
-        disabled={false}
-        title='Refresh'
-        color={Colors.accent}
-        onPress={() => { setPassList("none") } }
-      />
-      <Text style={ styles.disclaimer }>
+        <TextInput
+          numberOfLines={1}
+          autoCapitalize='none'
+          autoComplete='off'
+          defaultValue={formula}
+          style={Styles.formulaBox.input}
+          onSubmitEditing={(event) => {
+            storage.save({
+              key: "formula",
+              data: event.nativeEvent.text,
+              expires: null
+            })
+            setPassList("none")
+          }} />
+
+
+      </View>
+
+      <Line/>
+
+      <FlatList data={passList}
+        contentContainerStyle={Styles.password.list}
+        renderItem={({ item, index }) =>
+          <TouchableOpacity
+            activeOpacity={0.4}
+            onPress={() => { Clipboard.setString(item) }}
+          >
+            <View
+              style={Styles.password.password}>
+
+              <Text style={Styles.password.index}>
+                {index + 1}
+              </Text>
+
+              <View style={Styles.password.lineVertical} />
+
+              <Text
+                style={Styles.password.text}>
+                {item}
+              </Text>
+
+            </View>
+          </TouchableOpacity>
+        } />
+      <Line />
+
+      <View style={({width: 100, alignSelf: 'center'})}>
+        <Button
+          style={Styles.general.refreshButton}
+          title='Refresh'
+          color={Styles.colors.primary}
+          onPress={() => { setPassList("none") }}
+        />
+      </View>
+
+      <Text style={Styles.general.disclaimer}>
         Generated passwords are never saved or transmitted.
         All generation is run locally. Use at your own risk.
       </Text>
@@ -111,7 +147,7 @@ async function RandChar() {
 async function buildPassList() {
 
   try {
-    var formula = await storage.load({key: "formula"})
+    var formula = await storage.load({ key: "formula" })
   } catch (err) {
     if (err == "NotFoundError") {
       var formula = defaultFormula
@@ -119,7 +155,6 @@ async function buildPassList() {
       console.warn(err.message)
     }
   }
-
 
 
   var passwordList = []
@@ -147,53 +182,3 @@ async function buildPassList() {
 
 
 
-
-
-
-const Colors = {
-  text: "#fff",
-  primary: "#917E5D",
-  accent: "#E6AC47",
-  midground: "#838C96",
-  background: "#e3e3e9"
-}
-
-
-const styles = StyleSheet.create({
-  passList: {
-    flex: 10
-  },
-  spacer: {
-    flex: 1,
-    minHeight: 10,
-    maxHeight: 40
-  },
-  disclaimer: {
-    alignContent: 'flex-end',
-    marginTop: 10,
-  },
-  refreshButton: {
-    alignContent: "flex-end",
-    margin: 10
-  },
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: Colors.background,
-    alignItems: 'center',
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: Colors.text,
-    fontSize: 20,
-  },
-  password: {
-    backgroundColor: Colors.midground,
-    borderRadius: 20,
-    minWidth: 300,
-    padding: 15,
-    paddingHorizontal: 25,
-    marginBottom: 8
-  }
-});
