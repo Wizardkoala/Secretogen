@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import {Button, FlatList, Text, TextInput, View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import Storage from 'react-native-storage';
@@ -9,6 +9,7 @@ import { generateSecureRandom } from 'react-native-securerandom';
 
 import data from './words.json'
 import { useState } from 'react';
+import * as Styles from './Styles';
 
 
 const defaultFormula = "/w-/w#/n/n/n";
@@ -19,7 +20,6 @@ const storage = new Storage({
   defaultExpires: 30 * 1000 * 60,
   enableCache: false,
 })
-
 
 
 export default function App() {
@@ -49,30 +49,42 @@ export default function App() {
   }
   
   return (
-    <View style={styles.container}>
+    <View style={Styles.general.container}>
       <StatusBar style="dark" />
-      <View style={ styles.spacer } />
-      <TextInput 
-        numberOfLines={1}
-        autoCapitalize='none'
-        autoComplete='off'
-        defaultValue={formula}
-        onSubmitEditing={(event) => {
-          storage.save({
-            key: "formula",
-            data: event.nativeEvent.text,
-            expires: null
-          })
-          setFormula(event.nativeEvent.text)
-          }}/>
+      <View style={ Styles.general.spacer } />
+      
+      {/* Formula box */}
+      <View style={Styles.formulaBox.background}>
 
-      <View style={styles.spacer} />
+        <Text style={Styles.formulaBox.title}>
+          Formula
+        </Text>
+
+        <TextInput
+          numberOfLines={1}
+          autoCapitalize='none'
+          autoComplete='off'
+          defaultValue={formula}
+          style={Styles.formulaBox.input}
+          onSubmitEditing={(event) => {
+            storage.save({
+              key: "formula",
+              data: event.nativeEvent.text,
+              expires: null
+            })
+            setFormula(event.nativeEvent.text)
+          }} />
+
+
+      </View>
+
+      <View style={Styles.general.line} />
 
       <FlatList data={passList} 
-      style={styles.passList}
+      style={Styles.general.passList}
       renderItem={({item}) => 
-        <View style={styles.password}>
-          <Text onPress={() => { Clipboard.setString(item) }} style={styles.text}>
+        <View style={Styles.general.password}>
+          <Text onPress={() => { Clipboard.setString(item) }} style={Styles.general.text}>
             {item}
           </Text>
         </View>
@@ -81,18 +93,16 @@ export default function App() {
       <Button 
         disabled={false}
         title='Refresh'
-        color={Colors.accent}
+        color={Styles.colors.primary}
         onPress={() => { setPassList("none") } }
       />
-      <Text style={ styles.disclaimer }>
+      <Text style={ Styles.general.disclaimer }>
         Generated passwords are never saved or transmitted.
         All generation is run locally. Use at your own risk.
       </Text>
     </View>
   );
 }
-
-
 
 
 async function RandInt(min, max) {
@@ -147,53 +157,3 @@ async function buildPassList() {
 
 
 
-
-
-
-const Colors = {
-  text: "#fff",
-  primary: "#917E5D",
-  accent: "#E6AC47",
-  midground: "#838C96",
-  background: "#e3e3e9"
-}
-
-
-const styles = StyleSheet.create({
-  passList: {
-    flex: 10
-  },
-  spacer: {
-    flex: 1,
-    minHeight: 10,
-    maxHeight: 40
-  },
-  disclaimer: {
-    alignContent: 'flex-end',
-    marginTop: 10,
-  },
-  refreshButton: {
-    alignContent: "flex-end",
-    margin: 10
-  },
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: Colors.background,
-    alignItems: 'center',
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: Colors.text,
-    fontSize: 20,
-  },
-  password: {
-    backgroundColor: Colors.midground,
-    borderRadius: 20,
-    minWidth: 300,
-    padding: 15,
-    paddingHorizontal: 25,
-    marginBottom: 8
-  }
-});
