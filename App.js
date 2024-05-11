@@ -15,6 +15,17 @@ import * as Styles from './Styles';
 const Space = () => <View style={Styles.general.spacer} />;
 const Line = () => <View style={Styles.general.line} />;
 
+const H = ({ children }) => {
+  return (
+    <View style={Styles.disclaimer.highlight}>
+      <Text style={({ color: Styles.colors.midground })}>
+        {children}
+      </Text>
+    </View>
+  )
+}
+
+
 const defaultFormula = "/w-/w#/n/n/n";
 
 const storage = new Storage({
@@ -32,12 +43,6 @@ export default function App() {
   //   Generate passwords
 
 
-
-  if (passList == "none") {
-    buildPassList().then((ret) => { setPassList(ret) })
-    console.log("Queued password list build. Expect re-render.")
-  }
-
   if (formula == "base") {
     console.log("Retrieving formula. Expect re-render.")
     storage.load({
@@ -50,13 +55,18 @@ export default function App() {
       })
   }
 
+  if (passList == "none") {
+    console.log("Queued password list build. Expect re-render.")
+    buildPassList().then((ret) => { setPassList(ret) })
+  }
+
   console.log("App render.")
-  
-  
+
+
   return (
     <View style={Styles.general.container}>
       <StatusBar style="dark" />
-      <Space/>
+      <Space />
 
       {/* Formula box */}
       <View style={Styles.formulaBox.background}>
@@ -83,8 +93,9 @@ export default function App() {
 
       </View>
 
-      <Line/>
+      <Line />
 
+      {/* Password List */}
       <FlatList data={passList}
         contentContainerStyle={Styles.password.list}
         renderItem={({ item, index }) =>
@@ -109,9 +120,11 @@ export default function App() {
             </View>
           </TouchableOpacity>
         } />
+
       <Line />
 
-      <View style={({width: 100, alignSelf: 'center'})}>
+      {/* Refresh Button */}
+      <View style={({ width: 100, alignSelf: 'center', marginBottom: 10 })}>
         <Button
           style={Styles.general.refreshButton}
           title='Refresh'
@@ -120,10 +133,27 @@ export default function App() {
         />
       </View>
 
-      <Text style={Styles.general.disclaimer}>
-        Generated passwords are never saved or transmitted.
-        All generation is run locally. Use at your own risk.
-      </Text>
+      {/* Disclaimer */}
+      <View style={[Styles.disclaimer.container]}>
+
+        <Text style={[Styles.disclaimer.regular]}>
+          /w - Random dictionary word
+        </Text>
+
+        <Text style={Styles.disclaimer.regular}>
+          /c - Random lower-case characters
+        </Text>
+
+        <Text style={Styles.disclaimer.regular}>
+          /n - Random number 0-9
+        </Text>
+
+        <Text style={[Styles.disclaimer.regular, { margin: 10 }]}>
+          Generated passwords are never saved or transmitted.
+          All generation is run locally. Use at your own risk.
+        </Text>
+
+      </View>
     </View>
   );
 }
@@ -144,18 +174,17 @@ async function RandChar() {
   return data.Alphabet[await RandInt(0, 25)]
 }
 
+
 async function buildPassList() {
 
   try {
     var formula = await storage.load({ key: "formula" })
   } catch (err) {
-    if (err == "NotFoundError") {
-      var formula = defaultFormula
-    } else {
-      console.warn(err.message)
+    if (!err.message.includes("Not Found!")) {
+      console.warn(err)
     }
+    var formula = defaultFormula
   }
-
 
   var passwordList = []
 
@@ -179,6 +208,5 @@ async function buildPassList() {
   return passwordList
 
 }
-
 
 

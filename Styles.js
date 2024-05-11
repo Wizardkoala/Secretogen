@@ -67,11 +67,30 @@ export const password = StyleSheet.create({
   },
 })
 
+export const disclaimer = StyleSheet.create({
+  container: {
+    alignContent: 'center',
+    alignSelf: 'center',
+  },
+  regular: {
+    textAlign: 'center',
+    color: colors.midground
+  },
+  highlight: {
+    textAlign: 'center',
+    margin: 10,
+    color: colors.midground,
+    backgroundColor: colors.pushedBack,
+    borderRadius: 10,
+    paddingHorizontal: 5,
+  }
+})
+
 export const general = StyleSheet.create({
   spacer: {
     flex: 1,
-    minHeight: 50,
-    maxHeight: 70
+    minHeight: 40,
+    maxHeight: 60
   },
   line: {
     height: 2,
@@ -79,12 +98,6 @@ export const general = StyleSheet.create({
     width: 350,
     backgroundColor: colors.pushedBack,
     borderRadius: 100
-  },
-  disclaimer: {
-    alignSelf: 'flex-end',
-    textAlign: 'center',
-    margin: 10,
-    color: colors.midground
   },
   refreshButton: {
     alignContent: "flex-end",
