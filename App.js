@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {Button, FlatList, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import Storage from 'react-native-storage';
@@ -12,6 +12,9 @@ import { useState } from 'react';
 import * as Styles from './Styles';
 
 
+const Space = () => <View style={Styles.general.spacer} />;
+const Line = () => <View style={Styles.general.line} />;
+
 const defaultFormula = "/w-/w#/n/n/n";
 
 const storage = new Storage({
@@ -23,36 +26,38 @@ const storage = new Storage({
 
 
 export default function App() {
-  console.log("App render.")
   const [formula, setFormula] = useState("base")
   const [passList, setPassList] = useState("none")
 
   //   Generate passwords
-  
-  
-  
+
+
+
   if (passList == "none") {
-    buildPassList().then((ret) => {setPassList(ret)})
+    buildPassList().then((ret) => { setPassList(ret) })
     console.log("Queued password list build. Expect re-render.")
   }
-  
+
   if (formula == "base") {
     console.log("Retrieving formula. Expect re-render.")
     storage.load({
       key: "formula"
     }).then(ret => setFormula(ret))
-    .catch(err => {
-      if (err != "NotFoundError") {
-        setFormula(defaultFormula)
-      }
-    })
+      .catch(err => {
+        if (err != "NotFoundError") {
+          setFormula(defaultFormula)
+        }
+      })
   }
+
+  console.log("App render.")
+  
   
   return (
     <View style={Styles.general.container}>
       <StatusBar style="dark" />
-      <View style={ Styles.general.spacer } />
-      
+      <Space/>
+
       {/* Formula box */}
       <View style={Styles.formulaBox.background}>
 
@@ -72,37 +77,58 @@ export default function App() {
               data: event.nativeEvent.text,
               expires: null
             })
-            setFormula(event.nativeEvent.text)
+            setPassList("none")
           }} />
 
 
       </View>
 
-      <View style={Styles.general.line} />
+      <Line/>
 
-      <FlatList data={passList} 
-      style={Styles.general.passList}
-      renderItem={({item}) => 
-        <View style={Styles.general.password}>
-          <Text onPress={() => { Clipboard.setString(item) }} style={Styles.general.text}>
-            {item}
-          </Text>
-        </View>
-      } />
+      <FlatList data={passList}
+        contentContainerStyle={Styles.password.list}
+        renderItem={({ item, index }) =>
+          <TouchableOpacity
+            activeOpacity={0.4}
+            onPress={() => { Clipboard.setString(item) }}
+          >
+            <View
+              style={Styles.password.password}>
 
-      <Button 
-        disabled={false}
-        title='Refresh'
-        color={Styles.colors.primary}
-        onPress={() => { setPassList("none") } }
-      />
-      <Text style={ Styles.general.disclaimer }>
+              <Text style={Styles.password.index}>
+                {index + 1}
+              </Text>
+
+              <View style={Styles.password.lineVertical} />
+
+              <Text
+                style={Styles.password.text}>
+                {item}
+              </Text>
+
+            </View>
+          </TouchableOpacity>
+        } />
+      <Line />
+
+      <View style={({width: 100, alignSelf: 'center'})}>
+        <Button
+          style={Styles.general.refreshButton}
+          title='Refresh'
+          color={Styles.colors.primary}
+          onPress={() => { setPassList("none") }}
+        />
+      </View>
+
+      <Text style={Styles.general.disclaimer}>
         Generated passwords are never saved or transmitted.
         All generation is run locally. Use at your own risk.
       </Text>
     </View>
   );
 }
+
+
 
 
 async function RandInt(min, max) {
@@ -121,7 +147,7 @@ async function RandChar() {
 async function buildPassList() {
 
   try {
-    var formula = await storage.load({key: "formula"})
+    var formula = await storage.load({ key: "formula" })
   } catch (err) {
     if (err == "NotFoundError") {
       var formula = defaultFormula
@@ -129,7 +155,6 @@ async function buildPassList() {
       console.warn(err.message)
     }
   }
-
 
 
   var passwordList = []
