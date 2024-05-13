@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, FlatList, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Constants from 'expo-constants';
 
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,8 +11,6 @@ import { generateSecureRandom } from 'react-native-securerandom';
 import data from './words.json'
 import { useState } from 'react';
 import * as Styles from './Styles';
-
-const AppVersion = "0.1.1"
 
 const Space = () => <View style={Styles.general.spacer} />;
 const Line = () => <View style={Styles.general.line} />;
@@ -160,7 +159,7 @@ export default function App() {
         </Text>
 
         <Text style={Styles.disclaimer.version}>
-          V: {AppVersion}
+          V: {Constants.expoConfig.version}
         </Text>
 
       </View>
