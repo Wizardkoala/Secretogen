@@ -1,3 +1,4 @@
+import { version } from 'react';
 import { StyleSheet } from 'react-native';
 
 export const colors = {
@@ -92,13 +93,10 @@ export const disclaimer = StyleSheet.create({
     textAlign: 'center',
     color: colors.midground
   },
-  highlight: {
-    textAlign: 'center',
-    margin: 10,
-    color: colors.midground,
-    backgroundColor: colors.pushedBack,
-    borderRadius: 10,
-    paddingHorizontal: 5,
+  version: {
+    fontSize: 13,
+    alignSelf: 'flex-end',
+    color: colors.midground
   }
 })
 

@@ -11,6 +11,7 @@ import data from './words.json'
 import { useState } from 'react';
 import * as Styles from './Styles';
 
+const AppVersion = "0.1.1"
 
 const Space = () => <View style={Styles.general.spacer} />;
 const Line = () => <View style={Styles.general.line} />;
@@ -156,6 +157,10 @@ export default function App() {
         <Text style={[Styles.disclaimer.regular, { margin: 10 }]}>
           Generated passwords are never saved or transmitted.
           All generation is run locally. Use at your own risk.
+        </Text>
+
+        <Text style={Styles.disclaimer.version}>
+          V: {AppVersion}
         </Text>
 
       </View>
