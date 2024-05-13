@@ -7,6 +7,22 @@ export const colors = {
   pushedBack: "#E6EAED"
 }
 
+export const refreshButton = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginBottom: 10
+  },
+  button: {
+    alignContent: "flex-end",
+    margin: 10,
+    flex: 1
+  },
+  spacer: {
+    flex: 1,
+    width: 'auto'
+  }
+})
+
 export const formulaBox = StyleSheet.create({
   background: {
     backgroundColor: colors.pushedBack,
@@ -98,11 +114,6 @@ export const general = StyleSheet.create({
     width: 350,
     backgroundColor: colors.pushedBack,
     borderRadius: 100
-  },
-  refreshButton: {
-    alignContent: "flex-end",
-    margin: 10,
-    flex: 1
   },
   container: {
     flex: 1,

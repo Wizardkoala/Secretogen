@@ -124,13 +124,18 @@ export default function App() {
       <Line />
 
       {/* Refresh Button */}
-      <View style={({ width: 100, alignSelf: 'center', marginBottom: 10 })}>
-        <Button
-          style={Styles.general.refreshButton}
-          title='Refresh'
-          color={Styles.colors.primary}
-          onPress={() => { setPassList("none") }}
-        />
+      <View style={Styles.refreshButton.container}>
+        <View style={Styles.refreshButton.spacer} />
+        <View style={Styles.refreshButton.spacer}>
+          <Button
+            style={Styles.refreshButton.button}
+            title='Refresh'
+            color={Styles.colors.primary}
+            onPress={() => { setPassList("none") }}
+          />
+        </View>
+
+        <View style={Styles.refreshButton.spacer} />
       </View>
 
       {/* Disclaimer */}
