@@ -1,6 +1,6 @@
 # Secretogen
 
-**Currently kinda broken**
+**Currently in closed beta on the Google Play Store**
 
 ## Objective
 
